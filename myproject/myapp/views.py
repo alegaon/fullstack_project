@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-import sqlite3
+import sqlite3, requests
 
 def index(request):
     return HttpResponse("<html>¡<strong>Hola</strong>, <em>mundo</em>!</html>")
@@ -31,4 +31,17 @@ def cursos(request):
             """
     html += "</table></html>"
     conn.close()
+    return HttpResponse(html)
+
+def cotizacion_dolar(request):
+    # https://j2logo.com/python/python-requests-peticiones-http/
+    resp = requests.get('https://api.recursospython.com/dollar')
+    resultado = resp.json()
+    html = f"""
+        <html>
+        <title>Cotización del dólar</title>
+        <p><strong>Compra</strong>: {resultado["buy_price"]}</p>
+        <p><strong>Venta</strong>: {resultado["sale_price"]}</p>
+        </html>
+    """
     return HttpResponse(html)
