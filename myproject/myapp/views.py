@@ -1,5 +1,6 @@
-from django.http import HttpResponse
-import sqlite3, requests
+from django.http import HttpResponse, JsonResponse
+import sqlite3, requests, csv
+
 
 def index(request):
     return HttpResponse("<html>¡<strong>Hola</strong>, <em>mundo</em>!</html>")
@@ -45,3 +46,56 @@ def cotizacion_dolar(request):
         </html>
     """
     return HttpResponse(html)
+
+
+
+def aeropuertos(request):
+    f = open("aeropuertos.csv", encoding="utf8")
+    html = """
+        <html>
+        <title>Lista de aeropuertos</title>
+        <table style="border: 1px solid">
+          <thead>
+            <tr>
+              <th>Aeropuerto</th>
+              <th>Ciudad</th>
+              <th>País</th>
+            </tr>
+          </thead>
+    """
+    for linea in f:
+        datos = linea.split(",")
+        nombre = datos[1].replace('"', "")
+        ciudad = datos[2].replace('"', "")
+        pais = datos[3].replace('"', "")
+        html += f"""
+            <tr>
+              <td>{nombre}</td>
+              <td>{ciudad}</td>
+              <td>{pais}</td>
+            </tr>
+        """
+    f.close()
+    html += "</table></html>"
+    return HttpResponse(html)
+
+def aeropuertos_json(request):
+    f = open("aeropuertos.csv", encoding="utf8")
+    aeropuertos = []
+    for linea in f:
+        datos = linea.split(",")
+        aeropuerto = {
+            "nombre": datos[1].replace('"', ""),
+            "ciudad": datos[2].replace('"', ""),
+            "pais": datos[3].replace('"', "")
+        } 
+        aeropuertos.append(aeropuerto)
+    f.close()
+    return JsonResponse(aeropuertos, safe=False)
+
+
+
+       # for row in csvfile:
+        #    print(row)
+
+#     return HttpResponse(html)
